@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
 import { Dashboard } from './pages/Dashboard';
 import { InventoryPage } from './pages/Inventory';
@@ -24,30 +24,22 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        {/* Auth Pages (use AuthLayout) */}
-
+        {/* Auth Pages */}
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
-
-        {/* Main App Pages (use DashboardLayout) */}
-        <Route path="/dashboard/" element={
+        {/* Main App Pages */}
+        <Route path="/dashboard/*" element={
           <Layout style={{ minHeight: '100vh' }}>
-            {/* Top Navigation (Logo only) */}
             <TopNavigation />
-
-            {/* Main Layout */}
             <Layout>
-              {/* Sidebar Navigation */}
               <Sider
                 width={200}
                 theme="light"
                 breakpoint="lg"
                 collapsedWidth="0"
-                style={{
-                  boxShadow: '2px 0 8px rgba(0,0,0,0.1)'
-                }}
+                style={{ boxShadow: '2px 0 8px rgba(0,0,0,0.1)' }}
               >
                 <Menu
                   theme="light"
@@ -58,33 +50,32 @@ export default function App() {
                     {
                       key: '1',
                       icon: <DashboardOutlined />,
-                      label: <Link to="/">Dashboard</Link>
+                      label: <Link to="/dashboard">Dashboard</Link>
                     },
                     {
                       key: '2',
                       icon: <ShoppingCartOutlined />,
-                      label: <Link to="/orders">Orders</Link>
+                      label: <Link to="/dashboard/orders">Orders</Link>
                     },
                     {
                       key: '3',
                       icon: <DollarOutlined />,
-                      label: <Link to="/finances">Finances</Link>
+                      label: <Link to="/dashboard/finances">Finances</Link>
                     },
                     {
                       key: '4',
                       icon: <EnterOutlined />,
-                      label: <Link to="/inventory">Inventory</Link>
+                      label: <Link to="/dashboard/inventory">Inventory</Link>
                     },
                     {
                       key: '5',
                       icon: <TeamOutlined />,
-                      label: <Link to="/suppliers">Suppliers</Link>
+                      label: <Link to="/dashboard/suppliers">Suppliers</Link>
                     }
                   ]}
                 />
               </Sider>
 
-              {/* Page Content */}
               <Layout style={{ padding: '24px' }}>
                 <Content style={{
                   padding: 24,
@@ -94,17 +85,21 @@ export default function App() {
                   borderRadius: 8
                 }}>
                   <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/orders" element={<OrdersIndexPage />} />
-                    <Route path="/finances" element={<FinancesPageIndex />} />
-                    <Route path="/inventory" element={<InventoryPage />} />
-                    <Route path="/suppliers" element={<SuppliersPage />} />
+                    <Route index element={<Dashboard />} />
+                    <Route path="orders" element={<OrdersIndexPage />} />
+                    <Route path="finances" element={<FinancesPageIndex />} />
+                    <Route path="inventory" element={<InventoryPage />} />
+                    <Route path="suppliers" element={<SuppliersPage />} />
+                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
                   </Routes>
                 </Content>
               </Layout>
             </Layout>
           </Layout>
         } />
+
+        {/* Redirect any unknown paths to login */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );
